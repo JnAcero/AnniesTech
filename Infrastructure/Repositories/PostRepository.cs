@@ -2,6 +2,7 @@
 using AnniesTech.DataBase;
 using AnniesTech.Infrastructure.Interfaces;
 using AnniesTech.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AnniesTech.Infrastructure.Repositories
 {
@@ -9,6 +10,14 @@ namespace AnniesTech.Infrastructure.Repositories
     {
         public PostRepository(AnnisTechDbContext context) : base(context)
         {
+        }
+
+        public Post GetPostByIdWithAllComments(int id)
+        {
+           return _context.Posts
+                .Include(p =>p.Comentarios)
+                    .ThenInclude(c =>c.ComentariosHijos)
+                .FirstOrDefault(p =>p.Id == id); 
         }
     }
 }

@@ -8,6 +8,6 @@ namespace AnniesTech.Infrastructure.Interfaces
 {
     public interface IPost:IGenericRepository<Post>
     {
-        
+        Post GetPostByIdWithAllComments(int id);
     }
 }
