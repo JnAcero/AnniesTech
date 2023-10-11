@@ -13,6 +13,13 @@ namespace AnniesTech.Infrastructure.Repositories
         public UserRepository(AnnisTechDbContext context) : base(context)
         {
         }
+
+        public bool ExistUserByUsername(string userName)
+        {
+            var exist = _context.Usuarios.Any(u =>u.UserName.ToLower() == userName.ToLower());
+            return exist;
+        }
+
     }
 
 

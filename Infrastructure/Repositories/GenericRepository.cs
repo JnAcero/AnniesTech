@@ -31,6 +31,10 @@ namespace AnniesTech.Infrastructure.Repositories
         {
              return await _context.Set<T>().Where(expression).ToListAsync();
         }
+        public async Task<T> FindFirst(Expression<Func<T, bool>> expression)
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(expression);
+        }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
@@ -66,5 +70,10 @@ namespace AnniesTech.Infrastructure.Repositories
         {
            _context.Update(entity);
         }
+        public bool Exist(Expression<Func<T,bool>> expression)
+        {
+            return _context.Set<T>().Any(expression);
+        }
+        
     }
 }

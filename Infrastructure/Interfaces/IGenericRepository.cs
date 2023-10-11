@@ -17,6 +17,8 @@ namespace AnniesTech.Infrastructure.Interfaces
             void Remove(T entity);
             void RemoveRange(IEnumerable<T> entities);
             void Update(T entity);
+            bool Exist(Expression<Func<T,bool>> expression);
+            Task<T> FindFirst(Expression<Func<T, bool>> expression);
         
     }
 }

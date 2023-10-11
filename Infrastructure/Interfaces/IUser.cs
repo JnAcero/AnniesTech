@@ -8,6 +8,7 @@ namespace AnniesTech.Infrastructure.Interfaces
 {
     public interface IUser:IGenericRepository<Usuario>
     {
+        bool ExistUserByUsername(string userName);
         
     }
 }

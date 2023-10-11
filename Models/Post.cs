@@ -16,7 +16,7 @@ namespace AnniesTech.Models
         public int CategoriaId { get; set; }
         [ForeignKey("CategoriaId")]
         public Categoria Categoria { get; set;}
-        public DateTime FechaCreacion {get; set;} = DateTime.Now;
+        public DateTime FechaCreacion {get; set;}
         public int UsuarioId { get; set; }
         [ForeignKey("UsuarioId")]
         public Usuario Usuario { get; set; }

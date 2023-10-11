@@ -18,6 +18,6 @@ namespace AnniesTech.Models
         public Comentario ComentarioPadre { get; set; }
         public ICollection<Comentario> ? ComentariosHijos {get; set;}
         [NotMapped]
-        public int ? ComentarioAbueloId { get; set; }
+        public int ? ComentarioAbueloId { get; set; } 
     }
 }

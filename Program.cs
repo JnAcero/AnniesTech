@@ -39,7 +39,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 //Midleware que redirige a la pagina principal a los usuiarios que no estan autorizados a cirtas vistas o controladores
-app.UseStatusCodePagesWithRedirects("/Home/Index");
+app.UseStatusCodePagesWithRedirects("~/Home/Index");
 
 app.MapControllerRoute(
     name: "default",

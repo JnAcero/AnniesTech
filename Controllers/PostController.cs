@@ -25,8 +25,9 @@ namespace AnniesTech.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(Post post)
+        public async Task<IActionResult> Create(PostCreationDTO postDto)
         {
+            var post = _mapper.Map<Post>(postDto);
             _unitOfWork.Posts.Add(post);
             await _unitOfWork.SaveAsync();
 
