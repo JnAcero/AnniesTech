@@ -1,0 +1,20 @@
+<div class="container mt-5">
+    <h1 class="text-center alert-info">@ViewData["mensaje"]</h1>
+    <div class="row mt-5">
+        <div class="col-md-6 offset-md-4">
+            <div>
+                <a 
+                    asp-action="Registrar" 
+                    asp-controller="Cuenta" 
+                    class="btn btn-primary btn-lg btn-block"> Registrarse
+                </a>
+                 <a 
+                    asp-action="Login" 
+                    asp-controller="Cuenta" 
+                    class="btn btn-secondary btn-lg btn-block"> Iniciar Sesión
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>

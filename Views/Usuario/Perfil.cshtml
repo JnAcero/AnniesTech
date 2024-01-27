@@ -1,0 +1,59 @@
+@model Usuario
+
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-user"></i>Mi perfil</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title"><i class="fas fa-user-circle"></i>Informacion de perfil</h5>
+                </div>
+                <div class="card-body">
+                    <p class="font-weight-bold">Bienvenido/a @Model.Name</p>
+                    <form asp-action="ActualizarPerfil" asp-controller="Usuario" method="post">
+                        <input type="text" id="UsuarioId" name="Id" value="@Model.Id" hidden>
+                        <div class="form-group">
+                            <label for="Name">Nombre:</nav></label>
+                            <input type="text" id="Name" name="Name" class="form-control" value="@Model.Name" required >
+                        </div>
+                        <div class="form-group">
+                            <label for="Surname">Apellido:</nav></label>
+                            <input type="text" id="Surname" name="Surname" class="form-control" value="@Model.Surname" required >
+                        </div> 
+                        <div class="form-group">
+                            <label for="Email">Correo:</nav></label>
+                            <input type="text" id="Email" name="Email" class="form-control" value="@Model.Email" required >
+                        </div> 
+                        <div class="form-group">
+                            <label for="UserName">Nombre de usuario:</nav></label>
+                            <input type="text" id="UserName" name="UserName" class="form-control" value="@Model.UserName"  disabled>
+                        </div>
+                        <br>
+                        <button class="btn btn-success btn-lg" type="submit"><i class="fas fa-save"></i>Guardar cambios</button>                        
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Acciones peligrosas</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-danger">!Atencion Esta acción es irreversible y borrara todos sus datos y sus comentarios.</p>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cerrarCuentaModal">Eliminar cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Shared/Partials/_CerrarCuentaModal.cshtml");

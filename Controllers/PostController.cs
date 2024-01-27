@@ -7,6 +7,7 @@ using AnniesTech.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AnniesTech.Controllers
 {
@@ -19,12 +20,14 @@ namespace AnniesTech.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var categorias = await _unitOfWork.Categorias.GetAllAsync();
+            ViewBag.Categorias = categorias;
             return View();
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create(PostCreationDTO postDto)
         {
             var post = _mapper.Map<Post>(postDto);
@@ -34,14 +37,14 @@ namespace AnniesTech.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Update(int id)
         {
             var post = await _unitOfWork.Posts.GetByIdAsync(id);
             return View(post);
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Update(Post post)
         {
             _unitOfWork.Posts.Update(post);
@@ -51,7 +54,7 @@ namespace AnniesTech.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var post = await _unitOfWork.Posts.GetByIdAsync(id);
@@ -76,7 +79,7 @@ namespace AnniesTech.Controllers
 
             return View(model);
 
-        }
+        } 
 
         [HttpPost]
         public async Task<IActionResult> PublishComment(ComentarioCreationDTO comentarioDto)

@@ -1,11 +1,14 @@
 
 using System.Security.Claims;
 using AnniesTech.Infrastructure.DTOs;
+using AnniesTech.Infrastructure.Helpers;
 using AnniesTech.Infrastructure.Interfaces;
 using AnniesTech.Models;
 using AnniesTech.Models.ViewModels;
 using AnniesTech.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -25,10 +28,10 @@ namespace AnniesTech.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Registrar(UsuarioCreationDTO userDto)
+        public async Task<IActionResult> Registrar(Usuario userDto)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 try
                 {
                     var existUser = _unitOfWork.Users.ExistUserByUsername(userDto.UserName);
@@ -45,8 +48,11 @@ namespace AnniesTech.Controllers
                     userDto.RolId = defaultRolId;
                     userDto.Token = token;
 
-                    var usuario = _mapper.Map<Usuario>(userDto);
-                    //PENDIENTE PROGRAMAR ENVIO POR CORREO 
+                    _unitOfWork.Users.Add(userDto);
+                    await _unitOfWork.SaveAsync();
+                
+                    Email email = new();
+                    if(userDto.Email is not null) email.Enviar(userDto.Email, token);
 
                     return RedirectToAction("Token");
                 }
@@ -54,7 +60,8 @@ namespace AnniesTech.Controllers
                 {
                     ViewBag.Error = ex.Message;
                 }
-            }
+            //}
+            ViewBag.Error = "Por aca";
             return View(userDto);
         }
 
@@ -73,7 +80,7 @@ namespace AnniesTech.Controllers
                     }
                     else ViewData["mensaje"] = "Su enlace de activacion ha expirado";
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ViewData["mensaje"] = ex.Message;
                     return View();
@@ -81,8 +88,8 @@ namespace AnniesTech.Controllers
             }
             else
             {
-                 ViewData["mensaje"] = "Verifique su correo para activar su cuenta";
-                 return View();
+                ViewData["mensaje"] = "Verifique su correo para activar su cuenta";
+                return View();
             }
             return View();
         }
@@ -90,10 +97,10 @@ namespace AnniesTech.Controllers
         public IActionResult Login()
         {
             ClaimsPrincipal c = HttpContext.User;
-            if(c.Identity is not null)
+            if (c.Identity is not null)
             {
-                if(c.Identity.IsAuthenticated)
-                    return RedirectToAction("Index","Home");
+                if (c.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Home");
             }
             return View();
         }
@@ -101,17 +108,87 @@ namespace AnniesTech.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
-            if(ModelState.IsValid)
+            if (!ModelState.IsValid){
+                 var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
                 return View(viewModel);
+            }
+                
             try
             {
-                
+                var usuario = await _unitOfWork.Users.FindFirst(u => u.Email == viewModel.Email);
+                bool passwordMatch = BCrypt.Net.BCrypt.Verify(viewModel.Password, usuario.Password.ToString());
+ 
+                if (passwordMatch)
+                {
+                    DateTime fechaExpiracion = DateTime.UtcNow;
+
+                        if (!usuario.IsActive && usuario.ExpirationDate.ToString() != fechaExpiracion.ToString())
+                        {
+                            if (viewModel.Email is not null)
+                            {
+                                _userService.ActualizarToken(viewModel.Email);
+
+                                ViewBag.Error = " 1 Su cuenta no ha sido activada. Se ha reenviado un correo de activación, porfavor verifique su bandeja de entrada";
+                            }
+                        }
+                        else if (!usuario.IsActive)
+                        { // No estaba aca el metodo actulizar , es solo una prueba
+                             //_userService.ActualizarToken(viewModel.Email);
+
+                            ViewBag.Error = "2 Su cuenta no ha sido activada. Se ha reenviado un correo de activación, porfavor verifique su bandeja de entrada";
+                        }
+                        else
+                        {
+                            if (usuario.Name is not null)
+                            {
+                                var claims = new List<Claim>()
+                                {
+                                    new Claim(ClaimTypes.NameIdentifier, usuario.UserName),
+                                    new Claim("IdUsuario", usuario.Id.ToString())
+                                };
+
+                                 string nombreRol = usuario.RolId == 1 ? "Administrador" : "Usuario";
+                                claims.Add(new Claim(ClaimTypes.Role, nombreRol));
+
+                                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                                var propiedades = new AuthenticationProperties()
+                                {
+                                    AllowRefresh = true,
+                                    IsPersistent = viewModel.KeepActive,
+                                    ExpiresUtc = DateTimeOffset.UtcNow.Add(viewModel.KeepActive ? TimeSpan.FromDays(1) : TimeSpan.FromMinutes(1))
+                                };
+
+                                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), propiedades);
+
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else
+                            {
+                                ViewBag.Error = "Correo no se encuentra registrado";
+                            }
+                        }
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
-                throw;
-            }
+                ViewBag.Error = ex.Message;
+            } 
+            return View(viewModel); 
         }
+
+        public async Task<ActionResult> CerrarSesion()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index","Home");
+        }
+
+
+        
+
+        
     }
 }

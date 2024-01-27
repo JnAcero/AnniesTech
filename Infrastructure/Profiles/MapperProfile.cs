@@ -14,8 +14,8 @@ namespace AnniesTech.Infrastructure.Profiles
         public MapperProfiel()
         {
             CreateMap<Usuario,RegisterDto>().ReverseMap();
-
             CreateMap<Post,PostCreationDTO>().ReverseMap();
+            CreateMap<Usuario,UsuarioCreationDTO>().ReverseMap();
         }
     }
 }

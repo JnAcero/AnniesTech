@@ -21,7 +21,7 @@ namespace AnniesTech.Models
         public string Email { get; set; }
         [Required(ErrorMessage ="El campo Contraseña es obligatorio")]
         public string Password { get; set; }
-        public int RolId { get; set; }
+        public int ? RolId { get; set; }
         [ForeignKey("RolId")]
         public Rol Rol { get; set; }
         [MaxLength(50),Required]

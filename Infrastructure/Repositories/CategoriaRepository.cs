@@ -12,6 +12,13 @@ namespace AnniesTech.Infrastructure.Repositories
     {
         public CategoriaRepository(AnnisTechDbContext context) : base(context)
         {
+            
+        }
+
+        public string ObtenerDescripcion(string categoria)
+        {
+            var catg = _context.Categorias.FirstOrDefault(c =>c.Nombre.ToLower() == categoria.ToLower());
+            return catg.Descripcion;      
         }
     }
 }

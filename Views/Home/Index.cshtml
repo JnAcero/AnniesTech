@@ -1,8 +1,53 @@
-﻿@{
+﻿@model IPagedList<Post>
+    @using X.PagedList;
+    @using X.PagedList.Mvc.Core;
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="display-4 mb-4">Bienvenido/a a mi Blog</h1>
+            <p class="lead">Aquí puedes encontrar mis ultimas publicaciones sobre @ViewBag.CategoririaDescripcion</p>
+
+        </div>
+    </div>
+    <div class="row">
+        @if(ViewBag.Error is not null)
+        {
+            <div class="alert alert-info" role="alert">
+                @ViewBag.Error
+            </div>
+        }
+        @foreach(var post in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body">
+                        <h2 class="card-title">@post.Titulo</h2>
+                        <div class="card-footer">
+                            <small class="text-muted">@post.FechaCreacion.ToShortDateString()</small>
+                            <div class="float-right">
+                                <a asp-route-id="@post.Id" asp-action="Details" asp-action="Post"class="btn btn-primary btn-sm">Ver publicación</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @Html.PagedListPager(Model,pagina => Url.Action("Index", new{pagina}), new X.PagedList.Web.Common.PagedListRenderOptions()
+            {
+                LiElementClasses = new string[] {"page-item"},
+                PageClasses = new string[] {"page-link"},
+                ContainerDivClasses = new string[] {"pagination justify-content-center"},
+                UlElementClasses = new string[] {"pagination"}
+                
+            })
+        </div>
+    </div>
+
 </div>

@@ -19,5 +19,16 @@ namespace AnniesTech.Infrastructure.Repositories
                     .ThenInclude(c =>c.ComentariosHijos)
                 .FirstOrDefault(p =>p.Id == id); 
         }
+
+        public async Task<List<Post>> PostPorCategoria(string categ)
+        {
+            var query = 
+                from post in _context.Posts
+                join categoria in _context.Categorias on post.CategoriaId equals categoria.Id
+                where categoria.Nombre.ToLower() == categ.ToLower()
+                select post;
+
+                return await query.ToListAsync();
+        }
     }
 }

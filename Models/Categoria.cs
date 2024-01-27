@@ -10,6 +10,7 @@ namespace AnniesTech.Models
     {
         [MaxLength(100),Required]
         public string Nombre { get; set; }=null!;
+        public string ? Descripcion {get; set;}
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         
     }

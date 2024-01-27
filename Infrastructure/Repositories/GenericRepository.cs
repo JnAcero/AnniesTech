@@ -27,7 +27,7 @@ namespace AnniesTech.Infrastructure.Repositories
             _context.AddRange(entities);
         }
 
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression)
+        public async Task<List<T>> Find(Expression<Func<T, bool>> expression)
         {
              return await _context.Set<T>().Where(expression).ToListAsync();
         }
@@ -36,7 +36,7 @@ namespace AnniesTech.Infrastructure.Repositories
             return await _context.Set<T>().FirstOrDefaultAsync(expression);
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<List<T>> GetAllAsync()
         {
            return await _context.Set<T>().ToListAsync();
         }

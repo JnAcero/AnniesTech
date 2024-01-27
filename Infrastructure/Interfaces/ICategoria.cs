@@ -8,6 +8,6 @@ namespace AnniesTech.Infrastructure.Interfaces
 {
     public interface ICategoria:IGenericRepository<Categoria>
     {
-        
+        string ObtenerDescripcion(string categoria);
     }
 }
